@@ -11,3 +11,7 @@
 .order-starter/.gradle
 .order-starter/.idea
 .order-starter/build
+# kafka 
+.cf-kafka-service/.gradle
+.cf-kafka-service/.idea
+.cf-kafka-service/build

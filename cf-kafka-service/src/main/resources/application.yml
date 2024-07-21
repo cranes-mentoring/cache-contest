@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: cf-kafka-service
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+    name: postgres
+    url: jdbc:postgresql://localhost:5432/postgres
+
+  liquibase:
+    url: jdbc:postgresql://localhost:5432/postgres
+    user: postgres
+    password: postgres
+    change-log: classpath:db/changelog/changelog-master.xml
+    driver-class-name: org.postgresql.Driver
+
+  cache:
+    type: caffeine
+    cache-names: orders
+    caffeine:
+      spec: maximumSize=500,expireAfterAccess=600s
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: cf-kafka-service-1
+      auto-offset-reset: latest
+    producer:
+      bootstrap-servers: localhost:9092
+
+server:
+  port: ${SERVER_PORT:8080}
+
