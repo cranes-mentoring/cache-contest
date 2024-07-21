@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="contester">
+        <createTable tableName="orders">
+            <column name="uuid" type="uuid">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="text"/>
+            <column name="timestamp" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="contester">
+        <createTable tableName="cache_control">
+            <column name="name" type="text">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="last_update" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <insert tableName="cache_control">
+            <column name="name">orders</column>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

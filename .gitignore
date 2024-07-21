@@ -1,0 +1,13 @@
+.idea
+# common
+.cf-service/.gradle
+.cf-service/.idea
+.cf-service/build
+# with db
+.cf-db-service/.gradle
+.cf-db-service/.idea
+.cf-db-service/build
+# starter
+.order-starter/.gradle
+.order-starter/.idea
+.order-starter/build

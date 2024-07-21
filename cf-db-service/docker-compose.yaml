@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+
+  postgres:
+    container_name: postgres-db
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  cf-service-1:
+    container_name: cf-db-service-1
+    image: ere/cf-db-service
+    environment:
+      SERVER_PORT: 8083
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "8083:8083"
+
+  cf-service-2:
+    container_name: cf-db-service-2
+    image: ere/cf-db-service
+    environment:
+      SERVER_PORT: 8084
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "8084:8084"
+
+volumes:
+  postgres_data:

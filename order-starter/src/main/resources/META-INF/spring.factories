@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.ere.contest.orderstarter.repository.OrderRepository=\
+  org.ere.contest.orderstarter.model.entity.OrderEntity
+
