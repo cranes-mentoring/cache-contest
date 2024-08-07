@@ -15,3 +15,7 @@
 .cf-kafka-service/.gradle
 .cf-kafka-service/.idea
 .cf-kafka-service/build
+# redis
+.cf-redis-service/.gradle
+.cf-redis-service/.idea
+.cf-redis-service/build

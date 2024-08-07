@@ -15,21 +15,21 @@ services:
     container_name: cf-kafka-service-1
     image: ere/cf-kafka-service
     environment:
-      SERVER_PORT: 8081
+      SERVER_PORT: 8083
       SPRING_PROFILES_ACTIVE: stg
-      # todo: env to group
+      KAFKA_CG_NAME: cf-kafka-service-1
     ports:
-      - "8081:8081"
+      - "8083:8083"
 
   cf-kafka-service-2:
     container_name: cf-kafka-service-2
     image: ere/cf-kafka-service
     environment:
-      SERVER_PORT: 8082
+      SERVER_PORT: 8084
       SPRING_PROFILES_ACTIVE: stg
-      # todo: env to group
+      KAFKA_CG_NAME: cf-kafka-service-2
     ports:
-      - "8082:8082"
+      - "8084:8084"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
