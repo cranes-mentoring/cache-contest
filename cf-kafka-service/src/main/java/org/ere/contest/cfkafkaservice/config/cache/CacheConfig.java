@@ -1,7 +1,7 @@
-package org.ere.contest.cfkafkaservice.config;
+package org.ere.contest.cfkafkaservice.config.cache;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.ere.contest.cfkafkaservice.config.kafka.KafkaRemovalListener;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
@@ -16,12 +16,15 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 
     @Bean
-    public CacheManager cacheManager(KafkaTemplate<String, String> kafkaTemplate) {
+    public CacheManager cacheManager(
+            KafkaTemplate<String, String> kafkaTemplate,
+            ObjectMapper objectMapper
+    ) {
         var manager = new CaffeineCacheManager();
         manager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(500)
                 .expireAfterAccess(600, TimeUnit.SECONDS)
-                .removalListener(new KafkaRemovalListener(kafkaTemplate)));
+                .removalListener(new KafkaRemovalListener(kafkaTemplate, objectMapper)));
 
         return manager;
     }

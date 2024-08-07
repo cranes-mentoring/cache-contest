@@ -25,11 +25,11 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      group-id: cf-kafka-service-1
+      group-id: ${KAFKA_CG_NAME:cf-kafka-service-2}
       auto-offset-reset: latest
     producer:
       bootstrap-servers: localhost:9092
 
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT:8081}
 

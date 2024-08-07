@@ -1,5 +1,7 @@
-package org.ere.contest.cfkafkaservice.config.kafka;
+package org.ere.contest.cfkafkaservice.config.cache;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.RemovalListener;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -14,14 +16,20 @@ public class KafkaRemovalListener implements RemovalListener<Object, Object> {
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper objectMapper;
 
-    public KafkaRemovalListener(KafkaTemplate<String, String> kafkaTemplate) {
+    public KafkaRemovalListener(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @Override
     public void onRemoval(@Nullable Object key, @Nullable Object value, RemovalCause cause) {
         logger.info("Removed key: {}, value: {}", key, value);
-        kafkaTemplate.send(TOPIC, (String) key, (String) value);
-    }
+        try {
+            String json = objectMapper.writeValueAsString(value);
+            kafkaTemplate.send(TOPIC, (String) key, json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }}
 }

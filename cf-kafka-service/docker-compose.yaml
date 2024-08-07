@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   postgres:
-    container_name: postgres-default
+    container_name: postgres-cf-kafka
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres
@@ -11,21 +11,23 @@ services:
     ports:
       - "5432:5432"
 
-  cf-service-1:
+  cf-kafka-service-1:
     container_name: cf-kafka-service-1
     image: ere/cf-kafka-service
     environment:
       SERVER_PORT: 8081
       SPRING_PROFILES_ACTIVE: stg
+      # todo: env to group
     ports:
       - "8081:8081"
 
-  cf-service-2:
+  cf-kafka-service-2:
     container_name: cf-kafka-service-2
     image: ere/cf-kafka-service
     environment:
       SERVER_PORT: 8082
       SPRING_PROFILES_ACTIVE: stg
+      # todo: env to group
     ports:
       - "8082:8082"
 

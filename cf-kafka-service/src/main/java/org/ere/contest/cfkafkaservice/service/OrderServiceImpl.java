@@ -5,11 +5,12 @@ import org.ere.contest.orderstarter.model.entity.OrderEntity;
 import org.ere.contest.orderstarter.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionManager;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,49 +18,56 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final CacheManager cacheManager;
+    private final CacheService cacheService;
+    private final TransactionTemplate transactionTemplate;
 
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
-    private final String cacheName = "orders";
 
-    public OrderServiceImpl(OrderRepository orderRepository, CacheManager cacheManager) {
+    public OrderServiceImpl(
+            OrderRepository orderRepository,
+            CacheService cacheService,
+            TransactionTemplate transactionTemplate
+    ) {
         this.orderRepository = orderRepository;
-        this.cacheManager = cacheManager;
+        this.cacheService = cacheService;
+        this.transactionTemplate = transactionTemplate;
     }
 
     @Override
     public String createOrder(Order order) {
-
-
-        var saved = orderRepository.saveAndFlush(map(order));
-        return saved.getUuid().toString();
+        var saved = transactionTemplate.execute(_ -> orderRepository.saveAndFlush(map(order)));
+        return Objects.requireNonNull(saved).getUuid().toString();
     }
 
     @Override
     public void deleteOrder(String orderId) {
-        orderRepository.deleteById(UUID.fromString(orderId));
-        cacheManager.getCache(cacheName).evictIfPresent(orderId);
+        var orderUuid = UUID.fromString(orderId);
 
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                orderRepository.deleteById(orderUuid);
+            }
+        });
+
+        cacheService.evict(orderId);
         logger.info("Order with id {} has been deleted", orderId);
     }
 
     @Override
     public Optional<Order> getOrder(String orderId) {
-        var cache = cacheManager.getCache(cacheName);
-        assert cache != null;
+        var cachedOrder = cacheService.getOrder(orderId);
 
-        var cachedOrder = cache.get(orderId, Order.class);
-        if (cachedOrder != null) {
+        if (cachedOrder.isPresent()) {
             logger.info("Order with id {} has been loaded from cache", orderId);
-            return Optional.of(cachedOrder);
+            return cachedOrder;
         }
 
         var entity = orderRepository.findById(UUID.fromString(orderId));
 
         if (entity.isPresent()) {
             var order = map(entity.get());
-            cacheManager.getCache(cacheName).put(order.uuid(), order);
-
+            cacheService.putOrder(order);
             logger.info("Order with id {} has been added to cache", orderId);
 
             return Optional.of(order);
