@@ -19,3 +19,7 @@
 .redis-service/.gradle
 .redis-service/.idea
 .redis-service/build
+# hz 
+.hz-service/.gradle
+.hz-service/.idea
+.hz-service/build

@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    container_name: postgres-hz
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  hz-service-1:
+    container_name: hz-service-1
+    image: ere/hz-service
+    environment:
+      SERVER_PORT: 8081
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "8081:8081"
+
+  hz-service-2:
+    container_name: hz-service-2
+    image: ere/hz-service
+    environment:
+      SERVER_PORT: 8082
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "8082:8082"
+
+  hz:
+    image: hazelcast/hazelcast:5.3.1
+    environment:
+      JAVA_OPTS: -Dhazelcast.config=/project/hazelcast.yaml
+    ports:
+      - "5701:5701"
+    volumes:
+      - ".:/project"
+
+  mc:
+    image: hazelcast/management-center:5.3.1
+    environment:
+      MC_DEFAULT_CLUSTER: dev
+      MC_DEFAULT_CLUSTER_MEMBERS: hz:5701
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:

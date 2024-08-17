@@ -1,0 +1,7 @@
+hazelcast-client:
+  network:
+    cluster-members:
+      - hz:5701
+    connection-timeout: 5000
+  serialization:
+    portable-version: 1

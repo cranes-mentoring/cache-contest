@@ -1,0 +1,16 @@
+###
+GET http://localhost:8081/v1/api/order/delete/ccf0059e-37c5-4f34-9b56-3dc5b0cb95f8
+
+
+###
+POST http://localhost:8081/v5/api/order
+Content-Type: application/json
+
+{
+  "username": "content",
+  "timestamp": "1563362218"
+}
+
+###
+GET http://localhost:8082/v5/api/order/3e03f70f-9df3-499e-9d3a-6a591bde5a82
+Content-Type: application/json

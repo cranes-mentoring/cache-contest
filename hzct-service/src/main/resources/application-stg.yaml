@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: hz-service
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+    name: postgres
+    url: jdbc:postgresql://postgres:5432/postgres
+
+  liquibase:
+    url: jdbc:postgresql://postgres:5432/postgres
+    user: postgres
+    password: postgres
+    change-log: classpath:db/changelog/changelog-master.xml
+    driver-class-name: org.postgresql.Driver
+
+  cache:
+    type: hazelcast
+    cache-names: orders
+
+  hazelcast:
+    config: classpath:hazelcast-client-stg.yaml
+
+server:
+  port: ${SERVER_PORT:8081}
