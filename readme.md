@@ -4,7 +4,7 @@
 Welcome to **Cache Contest**, a project designed to demonstrate various caching mechanisms and their integration with modern technologies. This project includes services built with Java, Spring Boot, and Go, utilizing different caching strategies such as Caffeine and Memcached, as well as data synchronization with PostgreSQL and Kafka.
 
 ## Version
-**Current Version:** `0.0.3-SNAPSHOT`
+**Current Version:** `0.0.4-SNAPSHOT`
 
 ## Tech Stack
 - **Java 22**
@@ -13,6 +13,8 @@ Welcome to **Cache Contest**, a project designed to demonstrate various caching 
 - **PostgreSQL**
 - **Caffeine Cache**
 - **Kafka**
+- **Redis**
+
 ## For extra tests
 - **Golang**
 - **Memcached**
@@ -20,14 +22,17 @@ Welcome to **Cache Contest**, a project designed to demonstrate various caching 
 ## Services
 The project comprises the following services:
 
-### CF-Service
+### cf-service
 A simple service that implements Caffeine cache.
 
-### CF-DB-Service
+### cf-db-service
 A service that uses Caffeine cache with database synchronization.
 
-### CF-Kafka-Service
+### cf-kafka-service
 A service that combines Caffeine cache with Kafka for messaging.
+
+### redis-service
+Same service like before, but wit Redis and nothing else.
 
 ### Order-Starter
 A common starter library for Java services, providing shared configurations and utilities.
@@ -44,6 +49,7 @@ To get started with this project, follow the steps below:
 - PostgreSQL
 - Kafka
 - Memcached
+- Redis
 
 ### Installation
 1. **Clone the repository:**
