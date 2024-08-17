@@ -3,8 +3,8 @@ package org.ere.contest.cfredisservice.config;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -21,10 +21,13 @@ import java.time.Duration;
 @Configuration
 public class CacheConfiguration {
 
+    @Value("${spring.data.redis.host}")
+    public String host;
+
     @Bean
     public RedisConnectionFactory connectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName("localhost");
+        redisStandaloneConfiguration.setHostName(host);
         redisStandaloneConfiguration.setPort(6379);
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }

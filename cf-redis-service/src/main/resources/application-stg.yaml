@@ -7,10 +7,10 @@ spring:
     username: postgres
     password: postgres
     name: postgres
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://postgres:5432/postgres
 
   liquibase:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://postgres:5432/postgres
     user: postgres
     password: postgres
     change-log: classpath:db/changelog/changelog-master.xml
@@ -24,7 +24,7 @@ spring:
       cache-null-values: false
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
       client-type: jedis
       client-name: cf-redis-service
