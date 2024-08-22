@@ -35,7 +35,9 @@ Response: 200 OK with confirmation of deletion
 
 3. Get an Order by UUID  
 Endpoint: GET /v{version}/api/order/{orderUuid}  
-Response: 200 OK with the Order object if found, otherwise 404 Not Foun  d
+Response: 200 OK with the Order object if found, otherwise 404 Not Found
+
+
 Note: Replace {version} in the endpoints with the respective version number of the service you are interacting with (e.g., /v1, /v2, etc.).
 
 ## Services
