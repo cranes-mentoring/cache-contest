@@ -18,7 +18,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
-      - "9090:9090"
+      - "29090:29090"
 
   grafana:
     image: grafana/grafana:latest
@@ -32,16 +32,52 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
 
+  redis:
+    image: 'bitnami/redis:latest'
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_PORT_NUMBER=6379
+
+  cf-service-1:
+    container_name: cf-service-1
+    image: ere/cf-service
+    environment:
+      SERVER_PORT: 1000
+      MANAGEMENT_PORT: 1001
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1000:1000"
+      - "1001:1001"
+    depends_on:
+      - prometheus
+      - postgres
+
+  cf-service-2:
+    container_name: cf-service-2
+    image: ere/cf-service
+    environment:
+      SERVER_PORT: 1002
+      MANAGEMENT_PORT: 1003
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1002:1002"
+      - "1003:1003"
+    depends_on:
+      - prometheus
+      - postgres
+
   cf-db-service-1:
     container_name: cf-db-service-1
     image: ere/cf-db-service
     environment:
-      SERVER_PORT: 8081
-      MANAGEMENT_PORT: 8084
-      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 1004
+      MANAGEMENT_PORT: 1005
+      SPRING_PROFILES_ACTIVE: stg
     ports:
-      - "8081:8081"
-      - "8084:8084"
+      - "1004:1004"
+      - "1005:1005"
     depends_on:
       - prometheus
       - postgres
@@ -50,27 +86,45 @@ services:
     container_name: cf-db-service-2
     image: ere/cf-db-service
     environment:
-      SERVER_PORT: 8082
-      MANAGEMENT_PORT: 8085
-      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 1006
+      MANAGEMENT_PORT: 1007
+      SPRING_PROFILES_ACTIVE: stg
     ports:
-      - "8082:8082"
-      - "8085:8085"
+      - "1006:1006"
+      - "1007:1007"
     depends_on:
       - prometheus
       - postgres
 
-  # your-microservice:
-  #   image: your-microservice-image
-  #   container_name: your-microservice
-  #   ports:
-  #     - "8080:8080"
-  #   environment:
-  #     - SERVER_PORT=8080
-  #     - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=prometheus
-  #     - SPRING_PROFILES_ACTIVE=prod
-  #   depends_on:
-  #     - prometheus
+  redis-service-1:
+    container_name: redis-service-1
+    image: ere/redis-service
+    environment:
+      SERVER_PORT: 1008
+      MANAGEMENT_PORT: 1009
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1008:1008"
+      - "1009:1009"
+    depends_on:
+      - prometheus
+      - postgres
+      - redis
+
+  redis-service-2:
+    container_name: redis-service-2
+    image: ere/redis-service
+    environment:
+      SERVER_PORT: 1010
+      MANAGEMENT_PORT: 1011
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1010:1010"
+      - "1011:1011"
+    depends_on:
+      - prometheus
+      - postgres
+      - redis
 
 volumes:
   grafana_data:

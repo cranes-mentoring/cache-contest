@@ -28,6 +28,9 @@ dependencies {
     implementation("com.hazelcast:hazelcast:5.3.1")
     implementation("com.hazelcast:hazelcast-spring:5.3.1")
 
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+
     implementation("org.slf4j:slf4j-api")
     implementation("ch.qos.logback:logback-classic")
 

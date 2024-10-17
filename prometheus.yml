@@ -2,11 +2,32 @@ global:
   scrape_interval: 5s
 
 scrape_configs:
+  # cache
+  - job_name: 'cf-service-1'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['cf-service-1:1001']
+  - job_name: 'cf-service-2'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['cf-service-2:1002']
+  # cache + db
   - job_name: 'cf-db-service-1'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['cf-service-1:8084']
+      - targets: ['cf-db-service-1:1001']
   - job_name: 'cf-db-service-2'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['cf-service-2:8085']
+      - targets: ['cf-db-service-2:1003']
+  # cache + Kafka
+  # redis
+  - job_name: 'redis-service-1'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'redis-service-1:1007' ]
+  - job_name: 'redis-service-2'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'redis-service-2:1009' ]
+  # hzct
