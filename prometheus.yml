@@ -6,7 +6,7 @@ scrape_configs:
   - job_name: 'cf-service-1'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['cf-service-1:1000']
+      - targets: ['cf-service-1:1001']
   - job_name: 'cf-service-2'
     metrics_path: '/actuator/prometheus'
     static_configs:
@@ -15,11 +15,11 @@ scrape_configs:
   - job_name: 'cf-db-service-1'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['cf-db-service-1:1005']
+      - targets: ['cf-db-service-1:1001']
   - job_name: 'cf-db-service-2'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['cf-db-service-2:1007']
+      - targets: ['cf-db-service-2:1003']
   # cache + Kafka
   # redis
   - job_name: 'redis-service-1'
