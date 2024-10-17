@@ -81,7 +81,7 @@ services:
     depends_on:
       - prometheus
       - postgres
-      -
+
   cf-service-2:
     container_name: cf-service-2
     image: ere/cf-service
