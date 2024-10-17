@@ -1,7 +1,4 @@
 spring:
-  application:
-    name: hz-service
-
   datasource:
     driver-class-name: org.postgresql.Driver
     username: postgres
@@ -22,6 +19,3 @@ spring:
 
   hazelcast:
     config: classpath:hazelcast-client-stg.yaml
-
-server:
-  port: ${SERVER_PORT:8081}

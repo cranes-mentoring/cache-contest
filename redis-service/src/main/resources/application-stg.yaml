@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: redis-service
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -28,6 +26,3 @@ spring:
       port: 6379
       client-type: jedis
       client-name: redis-service
-
-server:
-  port: ${SERVER_PORT:8080}

@@ -1,26 +1,69 @@
-# common starter
-echo "building common starter"
-cd order-starter
-./gradlew clean publishToMavenLocal 
-cd ..
-echo "build was finished!"
+#!/bin/bash
 
-echo "starting build all services..."
+set -e
 
-# coffein cache service with postgres
-echo "building cf-db services..."
-cd cf-db-service
+build_common_starter() {
+  echo "Building common starter..."
+  cd order-starter || exit 1
+  ./gradlew clean publishToMavenLocal || exit 1
+  cd .. || exit 1
+  echo "Common starter build was finished!"
+}
 
-echo "prepare image..."
-./gradlew clean build
+build_cf_db_service() {
+  echo "Building cf-db service..."
+  cd cf-db-service || exit 1
 
-echo "build image..."
-cat Dockerfile
-sudo docker build -t ere/cf-db-service .
-cd ..
-pwd
+  echo "Preparing image..."
+  ./gradlew clean build || exit 1
 
-echo "done!"
+  echo "Building Docker image..."
+  cat Dockerfile
+  sudo docker build -t ere/cf-db-service . || exit 1
 
-# echo "building cf-kafka services..."
-# # todo...
+  cd .. || exit 1
+  echo "cf-db service build was finished!"
+}
+
+build_cf_service() {
+  echo "Building cf service..."
+  cd cf-service || exit 1
+
+  echo "Preparing image..."
+  ./gradlew clean build || exit 1
+
+  echo "Building Docker image..."
+  cat Dockerfile
+  sudo docker build -t ere/cf-service . || exit 1
+
+  cd .. || exit 1
+  echo "cf service build was finished!"
+}
+
+build_redis_service() {
+  echo "Building redis service..."
+  cd redis-service || exit 1
+
+  echo "Preparing image..."
+  ./gradlew clean build || exit 1
+
+  echo "Building Docker image..."
+  cat Dockerfile
+  sudo docker build -t ere/redis-service . || exit 1
+
+  cd .. || exit 1
+  echo "redis service build was finished!"
+}
+
+main() {
+  echo "Starting build process..."
+
+  build_common_starter
+  build_cf_db_service
+  build_cf_service
+  build_redis_service
+
+  echo "All services were built successfully!"
+}
+
+main

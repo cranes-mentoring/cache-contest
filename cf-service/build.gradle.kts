@@ -26,6 +26,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.github.ben-manes.caffeine:caffeine")
 
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("io.micrometer:micrometer-registry-prometheus")
+
 	implementation("org.slf4j:slf4j-api")
 	implementation("ch.qos.logback:logback-classic")
 
