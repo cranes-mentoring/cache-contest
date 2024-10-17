@@ -40,6 +40,25 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_PORT_NUMBER=6379
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
   cf-service-1:
     container_name: cf-service-1
     image: ere/cf-service
@@ -125,6 +144,38 @@ services:
       - prometheus
       - postgres
       - redis
+
+  cf-kafka-service-1:
+    container_name: cf-kafka-service-1
+    image: ere/cf-kafka-service
+    environment:
+      SERVER_PORT: 1012
+      MANAGEMENT_PORT: 1013
+      SPRING_PROFILES_ACTIVE: stg
+      KAFKA_CG_NAME: cf-kafka-service-1
+    ports:
+      - "1012:1012"
+      - "1013:1013"
+    depends_on:
+      - prometheus
+      - postgres
+      - kafka
+
+  cf-kafka-service-2:
+    container_name: cf-kafka-service-2
+    image: ere/cf-kafka-service
+    environment:
+      SERVER_PORT: 1014
+      MANAGEMENT_PORT: 1015
+      SPRING_PROFILES_ACTIVE: stg
+      KAFKA_CG_NAME: cf-kafka-service-2
+    ports:
+      - "1014:1014"
+      - "1015:1015"
+    depends_on:
+      - prometheus
+      - postgres
+      - kafka
 
 volumes:
   grafana_data:
