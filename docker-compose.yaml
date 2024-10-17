@@ -45,6 +45,15 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
 
+  hzct:
+    image: hazelcast/hazelcast:5.3.1
+    environment:
+      JAVA_OPTS: -Dhazelcast.config=/project/hazelcast.yaml
+    ports:
+      - "5701:5701"
+    volumes:
+      - ".:/project"
+
   kafka:
     image: confluentinc/cp-kafka:latest
     depends_on:
@@ -176,6 +185,36 @@ services:
       - prometheus
       - postgres
       - kafka
+
+  hzct-service-1:
+    container_name: hzct-service-1
+    image: ere/hzct-service
+    environment:
+      SERVER_PORT: 1016
+      MANAGEMENT_PORT: 1017
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1016:1016"
+      - "1017:1017"
+    depends_on:
+      - prometheus
+      - postgres
+      - hzct
+
+  hzct-service-2:
+    container_name: hzct-service-2
+    image: ere/hzct-service
+    environment:
+      SERVER_PORT: 1018
+      MANAGEMENT_PORT: 1019
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1018:1018"
+      - "1019:1019"
+    depends_on:
+      - prometheus
+      - postgres
+      - hzct
 
 volumes:
   grafana_data:

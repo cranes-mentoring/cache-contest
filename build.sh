@@ -70,6 +70,21 @@ build_kafka_service() {
   echo "cf-kafka service build was finished!"
 }
 
+build_hzct_service() {
+  echo "Building redis service..."
+  cd hzct-service || exit 1
+
+  echo "Preparing image..."
+  ./gradlew clean build || exit 1
+
+  echo "Building Docker image..."
+  cat Dockerfile
+  sudo docker build -t ere/hzct-service . || exit 1
+
+  cd .. || exit 1
+  echo "hzct service build was finished!"
+}
+
 main() {
   echo "Starting build process..."
 
@@ -78,6 +93,7 @@ main() {
   build_cf_service
   build_redis_service
   build_kafka_service
+  build_hzct_service
 
   echo "All services were built successfully!"
 }
