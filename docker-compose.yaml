@@ -1,0 +1,221 @@
+version: '3'
+
+services:
+  postgres:
+    container_name: postgres-db
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "29090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+  redis:
+    image: 'bitnami/redis:latest'
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_PORT_NUMBER=6379
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  hzct:
+    image: hazelcast/hazelcast:5.3.1
+    environment:
+      JAVA_OPTS: -Dhazelcast.config=/project/hazelcast.yaml
+    ports:
+      - "5701:5701"
+    volumes:
+      - ".:/project"
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  cf-service-1:
+    container_name: cf-service-1
+    image: ere/cf-service
+    environment:
+      SERVER_PORT: 1000
+      MANAGEMENT_PORT: 1001
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1000:1000"
+      - "1001:1001"
+    depends_on:
+      - prometheus
+      - postgres
+
+  cf-service-2:
+    container_name: cf-service-2
+    image: ere/cf-service
+    environment:
+      SERVER_PORT: 1002
+      MANAGEMENT_PORT: 1003
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1002:1002"
+      - "1003:1003"
+    depends_on:
+      - prometheus
+      - postgres
+
+  cf-db-service-1:
+    container_name: cf-db-service-1
+    image: ere/cf-db-service
+    environment:
+      SERVER_PORT: 1004
+      MANAGEMENT_PORT: 1005
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1004:1004"
+      - "1005:1005"
+    depends_on:
+      - prometheus
+      - postgres
+
+  cf-db-service-2:
+    container_name: cf-db-service-2
+    image: ere/cf-db-service
+    environment:
+      SERVER_PORT: 1006
+      MANAGEMENT_PORT: 1007
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1006:1006"
+      - "1007:1007"
+    depends_on:
+      - prometheus
+      - postgres
+
+  redis-service-1:
+    container_name: redis-service-1
+    image: ere/redis-service
+    environment:
+      SERVER_PORT: 1008
+      MANAGEMENT_PORT: 1009
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1008:1008"
+      - "1009:1009"
+    depends_on:
+      - prometheus
+      - postgres
+      - redis
+
+  redis-service-2:
+    container_name: redis-service-2
+    image: ere/redis-service
+    environment:
+      SERVER_PORT: 1010
+      MANAGEMENT_PORT: 1011
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1010:1010"
+      - "1011:1011"
+    depends_on:
+      - prometheus
+      - postgres
+      - redis
+
+  cf-kafka-service-1:
+    container_name: cf-kafka-service-1
+    image: ere/cf-kafka-service
+    environment:
+      SERVER_PORT: 1012
+      MANAGEMENT_PORT: 1013
+      SPRING_PROFILES_ACTIVE: stg
+      KAFKA_CG_NAME: cf-kafka-service-1
+    ports:
+      - "1012:1012"
+      - "1013:1013"
+    depends_on:
+      - prometheus
+      - postgres
+      - kafka
+
+  cf-kafka-service-2:
+    container_name: cf-kafka-service-2
+    image: ere/cf-kafka-service
+    environment:
+      SERVER_PORT: 1014
+      MANAGEMENT_PORT: 1015
+      SPRING_PROFILES_ACTIVE: stg
+      KAFKA_CG_NAME: cf-kafka-service-2
+    ports:
+      - "1014:1014"
+      - "1015:1015"
+    depends_on:
+      - prometheus
+      - postgres
+      - kafka
+
+  hzct-service-1:
+    container_name: hzct-service-1
+    image: ere/hzct-service
+    environment:
+      SERVER_PORT: 1016
+      MANAGEMENT_PORT: 1017
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1016:1016"
+      - "1017:1017"
+    depends_on:
+      - prometheus
+      - postgres
+      - hzct
+
+  hzct-service-2:
+    container_name: hzct-service-2
+    image: ere/hzct-service
+    environment:
+      SERVER_PORT: 1018
+      MANAGEMENT_PORT: 1019
+      SPRING_PROFILES_ACTIVE: stg
+    ports:
+      - "1018:1018"
+      - "1019:1019"
+    depends_on:
+      - prometheus
+      - postgres
+      - hzct
+
+volumes:
+  grafana_data:
+  postgres_data:

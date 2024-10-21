@@ -1,7 +1,4 @@
 spring:
-  application:
-    name: cf-service
-
   datasource:
     driver-class-name: org.postgresql.Driver
     username: postgres
@@ -21,7 +18,3 @@ spring:
     cache-names: orders
     caffeine:
       spec: maximumSize=500,expireAfterAccess=600s
-
-server:
-  port: ${SERVER_PORT}
-

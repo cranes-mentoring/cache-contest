@@ -1,7 +1,4 @@
 spring:
-  application:
-    name: cf-kafka-service
-
   datasource:
     driver-class-name: org.postgresql.Driver
     username: postgres
@@ -29,6 +26,3 @@ spring:
       auto-offset-reset: latest
     producer:
       bootstrap-servers: kafka:9092
-server:
-  port: ${SERVER_PORT}
-
