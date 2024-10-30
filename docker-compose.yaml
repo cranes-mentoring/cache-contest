@@ -1,4 +1,6 @@
-version: '3'
+networks:
+  cache_network:
+    driver: bridge
 
 services:
   postgres:
@@ -9,6 +11,8 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
+    networks:
+      - cache_network
 
   prometheus:
     image: prom/prometheus:latest
@@ -19,6 +23,8 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
       - "29090:9090"
+    networks:
+      - cache_network
 
   grafana:
     image: grafana/grafana:latest
@@ -31,6 +37,8 @@ services:
       - prometheus
     volumes:
       - grafana_data:/var/lib/grafana
+    networks:
+      - cache_network
 
   redis:
     image: 'bitnami/redis:latest'
@@ -39,11 +47,15 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_PORT_NUMBER=6379
+    networks:
+      - cache_network
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - cache_network
 
   hzct:
     image: hazelcast/hazelcast:5.3.1
@@ -53,6 +65,8 @@ services:
       - "5701:5701"
     volumes:
       - ".:/project"
+    networks:
+      - cache_network
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -67,6 +81,29 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - cache_network
+
+  nginx:
+    image: nginx:latest
+    container_name: lt-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - cache_network
+    depends_on:
+      - cf-service-1
+      - cf-service-2
+      - cf-db-service-1
+      - cf-db-service-2
+      - redis-service-1
+      - redis-service-2
+      - cf-kafka-service-1
+      - cf-kafka-service-2
+      - hzct-service-1
+      - hzct-service-2
 
   cf-service-1:
     container_name: cf-service-1
@@ -75,12 +112,15 @@ services:
       SERVER_PORT: 1000
       MANAGEMENT_PORT: 1001
       SPRING_PROFILES_ACTIVE: stg
+      JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
     ports:
       - "1000:1000"
       - "1001:1001"
     depends_on:
       - prometheus
       - postgres
+    networks:
+      - cache_network
 
   cf-service-2:
     container_name: cf-service-2
@@ -89,12 +129,15 @@ services:
       SERVER_PORT: 1002
       MANAGEMENT_PORT: 1003
       SPRING_PROFILES_ACTIVE: stg
+      JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
     ports:
       - "1002:1002"
       - "1003:1003"
     depends_on:
       - prometheus
       - postgres
+    networks:
+      - cache_network
 
   cf-db-service-1:
     container_name: cf-db-service-1
@@ -103,12 +146,15 @@ services:
       SERVER_PORT: 1004
       MANAGEMENT_PORT: 1005
       SPRING_PROFILES_ACTIVE: stg
+      JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
     ports:
       - "1004:1004"
       - "1005:1005"
     depends_on:
       - prometheus
       - postgres
+    networks:
+      - cache_network
 
   cf-db-service-2:
     container_name: cf-db-service-2
@@ -117,12 +163,15 @@ services:
       SERVER_PORT: 1006
       MANAGEMENT_PORT: 1007
       SPRING_PROFILES_ACTIVE: stg
+      JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
     ports:
       - "1006:1006"
       - "1007:1007"
     depends_on:
       - prometheus
       - postgres
+    networks:
+      - cache_network
 
   redis-service-1:
     container_name: redis-service-1
@@ -131,6 +180,7 @@ services:
       SERVER_PORT: 1008
       MANAGEMENT_PORT: 1009
       SPRING_PROFILES_ACTIVE: stg
+      JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
     ports:
       - "1008:1008"
       - "1009:1009"
@@ -138,6 +188,8 @@ services:
       - prometheus
       - postgres
       - redis
+    networks:
+      - cache_network
 
   redis-service-2:
     container_name: redis-service-2
@@ -153,6 +205,8 @@ services:
       - prometheus
       - postgres
       - redis
+    networks:
+      - cache_network
 
   cf-kafka-service-1:
     container_name: cf-kafka-service-1
@@ -162,6 +216,7 @@ services:
       MANAGEMENT_PORT: 1013
       SPRING_PROFILES_ACTIVE: stg
       KAFKA_CG_NAME: cf-kafka-service-1
+      JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
     ports:
       - "1012:1012"
       - "1013:1013"
@@ -169,6 +224,8 @@ services:
       - prometheus
       - postgres
       - kafka
+    networks:
+      - cache_network
 
   cf-kafka-service-2:
     container_name: cf-kafka-service-2
@@ -178,6 +235,7 @@ services:
       MANAGEMENT_PORT: 1015
       SPRING_PROFILES_ACTIVE: stg
       KAFKA_CG_NAME: cf-kafka-service-2
+      JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
     ports:
       - "1014:1014"
       - "1015:1015"
@@ -185,6 +243,8 @@ services:
       - prometheus
       - postgres
       - kafka
+    networks:
+      - cache_network
 
   hzct-service-1:
     container_name: hzct-service-1
@@ -193,6 +253,7 @@ services:
       SERVER_PORT: 1016
       MANAGEMENT_PORT: 1017
       SPRING_PROFILES_ACTIVE: stg
+      JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
     ports:
       - "1016:1016"
       - "1017:1017"
@@ -200,6 +261,8 @@ services:
       - prometheus
       - postgres
       - hzct
+    networks:
+      - cache_network
 
   hzct-service-2:
     container_name: hzct-service-2
@@ -208,6 +271,7 @@ services:
       SERVER_PORT: 1018
       MANAGEMENT_PORT: 1019
       SPRING_PROFILES_ACTIVE: stg
+      JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
     ports:
       - "1018:1018"
       - "1019:1019"
@@ -215,6 +279,8 @@ services:
       - prometheus
       - postgres
       - hzct
+    networks:
+      - cache_network
 
 volumes:
   grafana_data:
