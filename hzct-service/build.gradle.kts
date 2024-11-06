@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.ere.contest"
-version = "0.0.1-SNAPSHOT"
+version = "0.1.1"
 
 java {
     toolchain {
@@ -19,13 +19,13 @@ repositories {
 }
 
 dependencies {
-    implementation("org.ere.contest:order-starter:0.1.1")
+    implementation("org.ere.contest:order-starter:0.2.2")
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    implementation("com.hazelcast:hazelcast:5.3.1")
+    implementation("com.hazelcast:hazelcast:5.3.5")
     implementation("com.hazelcast:hazelcast-spring:5.3.1")
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")

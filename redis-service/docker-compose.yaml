@@ -12,7 +12,7 @@ services:
       - "5432:5432"
 
   redis-service-1:
-    container_name: edis-service-1
+    container_name: redis-service-1
     image: ere/redis-service
     environment:
       SERVER_PORT: 8080

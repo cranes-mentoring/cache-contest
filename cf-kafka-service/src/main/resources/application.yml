@@ -1,6 +1,6 @@
 spring:
   application:
-    name: cf-kafka-service
+    name: ${APP_NAME:cf-kafka-service}
 
   datasource:
     driver-class-name: org.postgresql.Driver

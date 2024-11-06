@@ -1,6 +1,6 @@
 spring:
   application:
-    name: cf-db-service
+    name: ${APP_NAME:cf-db-service}
 
   datasource:
     driver-class-name: org.postgresql.Driver

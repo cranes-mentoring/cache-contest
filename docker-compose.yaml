@@ -113,6 +113,7 @@ services:
       MANAGEMENT_PORT: 1001
       SPRING_PROFILES_ACTIVE: stg
       JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
+      APP_NAME: cf-service-1
     ports:
       - "1000:1000"
       - "1001:1001"
@@ -130,6 +131,7 @@ services:
       MANAGEMENT_PORT: 1003
       SPRING_PROFILES_ACTIVE: stg
       JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
+      APP_NAME: cf-service-2
     ports:
       - "1002:1002"
       - "1003:1003"
@@ -147,6 +149,7 @@ services:
       MANAGEMENT_PORT: 1005
       SPRING_PROFILES_ACTIVE: stg
       JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
+      APP_NAME: cf-db-service-1
     ports:
       - "1004:1004"
       - "1005:1005"
@@ -164,6 +167,7 @@ services:
       MANAGEMENT_PORT: 1007
       SPRING_PROFILES_ACTIVE: stg
       JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
+      APP_NAME: cf-db-service-2
     ports:
       - "1006:1006"
       - "1007:1007"
@@ -181,6 +185,7 @@ services:
       MANAGEMENT_PORT: 1009
       SPRING_PROFILES_ACTIVE: stg
       JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
+      APP_NAME: redis-service-1
     ports:
       - "1008:1008"
       - "1009:1009"
@@ -198,6 +203,8 @@ services:
       SERVER_PORT: 1010
       MANAGEMENT_PORT: 1011
       SPRING_PROFILES_ACTIVE: stg
+      JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
+      APP_NAME: redis-service-2
     ports:
       - "1010:1010"
       - "1011:1011"
@@ -217,6 +224,7 @@ services:
       SPRING_PROFILES_ACTIVE: stg
       KAFKA_CG_NAME: cf-kafka-service-1
       JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
+      APP_NAME: cf-kafka-service-1
     ports:
       - "1012:1012"
       - "1013:1013"
@@ -236,6 +244,7 @@ services:
       SPRING_PROFILES_ACTIVE: stg
       KAFKA_CG_NAME: cf-kafka-service-2
       JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
+      APP_NAME: cf-kafka-service-2
     ports:
       - "1014:1014"
       - "1015:1015"
@@ -254,6 +263,7 @@ services:
       MANAGEMENT_PORT: 1017
       SPRING_PROFILES_ACTIVE: stg
       JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
+      APP_NAME: hzct-service-1
     ports:
       - "1016:1016"
       - "1017:1017"
@@ -272,6 +282,7 @@ services:
       MANAGEMENT_PORT: 1019
       SPRING_PROFILES_ACTIVE: stg
       JVM_OPTS: "-Xmx512m -Xms128m -XX:MaxPermSize=512m -XX:MaxRAMPercentage=33.0"
+      APP_NAME: hzct-service-2
     ports:
       - "1018:1018"
       - "1019:1019"

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "org.ere.contest"
-version = "0.0.1-SNAPSHOT"
+version = "0.1.1"
 
 java {
     toolchain {
@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.ere.contest:order-starter:0.1.1")
+    implementation("org.ere.contest:order-starter:0.2.2")
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-cache")

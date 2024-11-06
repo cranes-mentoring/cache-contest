@@ -5,6 +5,7 @@ import org.ere.contest.orderstarter.model.entity.OrderEntity;
 import org.ere.contest.orderstarter.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@ComponentScan("org.ere.contest.orderstarter.config")
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
