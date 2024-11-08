@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "org.ere.contest"
-version = "0.1.1"
+version = "0.2.2"
 
 java {
     toolchain {
@@ -23,6 +23,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter:3.3.2")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.3.2")
     implementation("org.springframework.boot:spring-boot-starter-web:3.3.2")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.13.1")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.liquibase:liquibase-core:4.28.0")
     implementation("org.slf4j:slf4j-api:2.0.13")
     implementation("ch.qos.logback:logback-classic:1.5.6")

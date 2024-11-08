@@ -1,6 +1,6 @@
 spring:
   application:
-    name: redis-service
+    name: ${APP_NAME:redis-service}
 
   datasource:
     driver-class-name: org.postgresql.Driver

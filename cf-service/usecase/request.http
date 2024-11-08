@@ -1,5 +1,5 @@
 ###
-GET http://localhost:8080/v1/api/order/delete/b1e2b125-3a37-474f-b1b1-1ce757451bd4
+GET http://localhost:8080/api/v1/order/delete/fa7ce104-2dba-4512-a642-50eb7c6d10bb
 
 <> 2024-07-18T104458.200.txt
 <> 2024-07-18T102501.200.txt
@@ -8,7 +8,7 @@ GET http://localhost:8080/v1/api/order/delete/b1e2b125-3a37-474f-b1b1-1ce757451b
 
 
 ###
-POST http://localhost:8081/v1/api/order
+POST http://localhost:8080/api/v1/order
 Content-Type: application/json
 
 {
@@ -45,7 +45,8 @@ Content-Type: application/json
 
 
 ###
-GET http://localhost:8080/v1/api/order/b1e2b125-3a37-474f-b1b1-1ce757451bd4
+GET http://localhost:8080/api/v1/order/1231231
+
 Content-Type: application/json
 
 <> 2024-07-18T104504.200.json

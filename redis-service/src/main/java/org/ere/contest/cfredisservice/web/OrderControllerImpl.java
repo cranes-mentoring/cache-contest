@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/v4/api/order")
+@RequestMapping("/api/v1/order")
 public class OrderControllerImpl implements OrderController {
 
     private final OrderService orderService;

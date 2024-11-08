@@ -1,11 +1,14 @@
 package org.ere.contest.cfservice.service;
 
+import org.ere.contest.orderstarter.config.MetricsRegistry;
 import org.ere.contest.orderstarter.model.Order;
 import org.ere.contest.orderstarter.model.entity.OrderEntity;
 import org.ere.contest.orderstarter.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,17 +16,21 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@ComponentScan("org.ere.contest.orderstarter.config")
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final CacheManager cacheManager;
+    private final Cache orderCache;
+    private final MetricsRegistry metricsRegistry;
 
-    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
     private final String cacheName = "orders";
+    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-    public OrderServiceImpl(OrderRepository orderRepository, CacheManager cacheManager) {
+    public OrderServiceImpl(OrderRepository orderRepository, CacheManager cacheManager, MetricsRegistry metricsRegistry) {
         this.orderRepository = orderRepository;
-        this.cacheManager = cacheManager;
+        this.metricsRegistry = metricsRegistry;
+
+        orderCache = cacheManager.getCache(cacheName);
     }
 
     @Override
@@ -37,19 +44,18 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void deleteOrder(String orderId) {
         orderRepository.deleteById(UUID.fromString(orderId));
-        cacheManager.getCache(cacheName).evictIfPresent(orderId);
+        orderCache.evictIfPresent(orderId);
 
         logger.info("Order with id {} has been deleted", orderId);
     }
 
     @Override
     public Optional<Order> getOrder(String orderId) {
-        var cache = cacheManager.getCache(cacheName);
-        assert cache != null;
-
-        var cachedOrder = cache.get(orderId, Order.class);
+        var cachedOrder = orderCache.get(orderId, Order.class);
         if (cachedOrder != null) {
             logger.info("Order with id {} has been loaded from cache", orderId);
+            metricsRegistry.incrementCacheHitCounter();
+
             return Optional.of(cachedOrder);
         }
 
@@ -57,13 +63,14 @@ public class OrderServiceImpl implements OrderService {
 
         if (entity.isPresent()) {
             var order = map(entity.get());
-            cacheManager.getCache(cacheName).put(order.uuid(), order);
+            orderCache.put(order.uuid(), order);
 
             logger.info("Order with id {} has been added to cache", orderId);
 
             return Optional.of(order);
         }
 
+        metricsRegistry.incrementCacheMissCounter();
         return Optional.empty();
     }
 

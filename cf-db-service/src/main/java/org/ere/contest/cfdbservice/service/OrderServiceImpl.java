@@ -1,17 +1,19 @@
 package org.ere.contest.cfdbservice.service;
 
+import org.ere.contest.cfdbservice.model.entity.CacheEntity;
+import org.ere.contest.orderstarter.config.MetricsRegistry;
 import org.ere.contest.orderstarter.model.Order;
 import org.ere.contest.orderstarter.model.entity.OrderEntity;
 import org.ere.contest.orderstarter.repository.OrderRepository;
 import org.ere.contest.cfdbservice.repository.CacheRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,16 +21,20 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final CacheManager cacheManager;
     private final CacheRepository cacheRepository;
+    private final MetricsRegistry metricsRegistry;
+    private final Cache orderCache;
 
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+
     private final String cacheName = "orders";
 
-    public OrderServiceImpl(OrderRepository orderRepository, CacheManager cacheManager, CacheRepository cacheRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, CacheManager cacheManager, CacheRepository cacheRepository, MetricsRegistry metricsRegistry) {
         this.orderRepository = orderRepository;
-        this.cacheManager = cacheManager;
         this.cacheRepository = cacheRepository;
+        this.metricsRegistry = metricsRegistry;
+
+        orderCache = cacheManager.getCache(cacheName);
     }
 
     @Override
@@ -43,27 +49,20 @@ public class OrderServiceImpl implements OrderService {
     public void deleteOrder(String orderId) {
         orderRepository.deleteById(UUID.fromString(orderId));
 
-        Objects.requireNonNull(cacheManager.getCache(cacheName)).evictIfPresent(orderId);
+        orderCache.evictIfPresent(orderId);
         var cachedEntity = cacheRepository.findById(cacheName);
-        if (cachedEntity.isPresent()) {
-            var updated = cachedEntity.get();
-            updated.setLastUpdate(Instant.now());
-            cacheRepository.save(updated);
-
-            logger.info("cache updated {}", cacheName);
-        }
+        cachedEntity.ifPresent(this::updateCache);
 
         logger.info("Order with id {} has been deleted", orderId);
     }
 
     @Override
     public Optional<Order> getOrder(String orderId) {
-        var cache = cacheManager.getCache(cacheName);
-        assert cache != null;
-
-        var cachedOrder = cache.get(orderId, Order.class);
+        var cachedOrder = orderCache.get(orderId, Order.class);
         if (cachedOrder != null) {
             logger.info("Order with id {} has been loaded from cache", orderId);
+            metricsRegistry.incrementCacheHitCounter();
+
             return Optional.of(cachedOrder);
         }
 
@@ -71,14 +70,22 @@ public class OrderServiceImpl implements OrderService {
 
         if (entity.isPresent()) {
             var order = map(entity.get());
-            cacheManager.getCache(cacheName).put(order.uuid(), order);
+            orderCache.put(order.uuid(), order);
 
             logger.info("Order with id {} has been added to cache", orderId);
 
             return Optional.of(order);
         }
 
+        metricsRegistry.incrementCacheMissCounter();
+
         return Optional.empty();
+    }
+
+    private void updateCache(CacheEntity cachedEntity) {
+        cachedEntity.setLastUpdate(Instant.now());
+        cacheRepository.save(cachedEntity);
+        logger.info("cache updated {}", cacheName);
     }
 
     private OrderEntity map(Order order) {
